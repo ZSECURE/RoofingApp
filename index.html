@@ -314,7 +314,7 @@
             }
 
             if (overallSpan <= 0 || ridgeWidth < 0 || roofPitch < 0 || roofPitch > 90) {
-                showError('Please enter valid positive values. Overall span must be greater than 0, and pitch must be between 0 and 90 degrees.');
+                showError('Please enter valid values. Overall span must be greater than 0, ridge width must be 0 or greater, and pitch must be between 0 and 90 degrees.');
                 return;
             }
 
@@ -331,7 +331,8 @@
         });
 
         function calculateRafterLength(span, ridge, pitch) {
-            // Calculate the run (horizontal distance from wall to ridge)
+            // Calculate rafter length for a standard gable roof with centered ridge
+            // The run (horizontal distance from wall to ridge)
             const run = (span - ridge) / 2;
 
             // Convert pitch from degrees to radians
