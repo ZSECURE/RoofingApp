@@ -210,6 +210,51 @@
             display: block;
         }
 
+        .diagram-container {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .roof-diagram {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin: 0 auto;
+        }
+
+        .roof-diagram svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .diagram-labels {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .diagram-labels div {
+            margin-bottom: 5px;
+        }
+
+        .diagram-labels strong {
+            color: #333;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 480px) {
             .calculator-container {
@@ -232,8 +277,8 @@
         <p class="subtitle">Calculate rafter length with precision</p>
 
         <div class="unit-selector">
-            <button class="unit-btn active" data-unit="imperial" onclick="switchUnit('imperial')">Imperial</button>
-            <button class="unit-btn" data-unit="metric" onclick="switchUnit('metric')">Metric</button>
+            <button class="unit-btn" data-unit="imperial" onclick="switchUnit('imperial')">Imperial</button>
+            <button class="unit-btn active" data-unit="metric" onclick="switchUnit('metric')">Metric</button>
         </div>
 
         <form id="roofingForm">
@@ -241,7 +286,7 @@
                 <label for="overallSpan">Overall Span</label>
                 <div class="input-wrapper">
                     <input type="number" id="overallSpan" step="0.01" min="0" required>
-                    <span class="unit-label" id="spanUnit">ft</span>
+                    <span class="unit-label" id="spanUnit">mm</span>
                 </div>
             </div>
 
@@ -249,7 +294,7 @@
                 <label for="ridgeWidth">Ridge Width</label>
                 <div class="input-wrapper">
                     <input type="number" id="ridgeWidth" step="0.01" min="0" required>
-                    <span class="unit-label" id="ridgeUnit">ft</span>
+                    <span class="unit-label" id="ridgeUnit">mm</span>
                 </div>
             </div>
 
@@ -269,12 +314,58 @@
         <div class="result-container" id="resultContainer">
             <div class="result-label">Rafter Length</div>
             <div class="result-value" id="resultValue">0</div>
-            <div class="result-unit" id="resultUnit">ft</div>
+            <div class="result-unit" id="resultUnit">mm</div>
+        </div>
+
+        <div class="diagram-container">
+            <div class="diagram-title">How It Works</div>
+            <div class="roof-diagram">
+                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Ground line -->
+                    <line x1="50" y1="170" x2="350" y2="170" stroke="#333" stroke-width="2"/>
+                    
+                    <!-- Left wall -->
+                    <line x1="80" y1="170" x2="80" y2="120" stroke="#666" stroke-width="3"/>
+                    
+                    <!-- Right wall -->
+                    <line x1="320" y1="170" x2="320" y2="120" stroke="#666" stroke-width="3"/>
+                    
+                    <!-- Ridge board (vertical) -->
+                    <line x1="200" y1="50" x2="200" y2="60" stroke="#8B4513" stroke-width="4"/>
+                    
+                    <!-- Left rafter (highlighted) -->
+                    <line x1="80" y1="120" x2="200" y2="50" stroke="#667eea" stroke-width="4"/>
+                    
+                    <!-- Right rafter -->
+                    <line x1="320" y1="120" x2="200" y2="50" stroke="#667eea" stroke-width="4"/>
+                    
+                    <!-- Overall Span (bottom) -->
+                    <line x1="80" y1="185" x2="320" y2="185" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="200" y="197" text-anchor="middle" font-size="12" fill="#ff6b6b" font-weight="bold">Overall Span</text>
+                    
+                    <!-- Ridge Width -->
+                    <line x1="195" y1="45" x2="205" y2="45" stroke="#ffa500" stroke-width="2"/>
+                    <text x="200" y="35" text-anchor="middle" font-size="11" fill="#ffa500" font-weight="bold">Ridge</text>
+                    
+                    <!-- Rafter label -->
+                    <text x="135" y="75" text-anchor="middle" font-size="13" fill="#667eea" font-weight="bold">← Rafter Length</text>
+                    
+                    <!-- Pitch angle arc -->
+                    <path d="M 100 120 Q 110 115 115 105" stroke="#4CAF50" stroke-width="2" fill="none"/>
+                    <text x="125" y="110" font-size="11" fill="#4CAF50" font-weight="bold">Pitch°</text>
+                </svg>
+            </div>
+            <div class="diagram-labels">
+                <div><strong>Overall Span:</strong> Total width of the building</div>
+                <div><strong>Ridge Width:</strong> Width of the ridge board at the peak</div>
+                <div><strong>Roof Pitch:</strong> Angle of the roof slope (in degrees)</div>
+                <div><strong>Rafter Length:</strong> Length of one rafter from wall to ridge</div>
+            </div>
         </div>
     </div>
 
     <script>
-        let currentUnit = 'imperial';
+        let currentUnit = 'metric';
 
         function switchUnit(unit) {
             currentUnit = unit;
@@ -285,7 +376,7 @@
             });
 
             // Update unit labels
-            const unitLabel = unit === 'imperial' ? 'ft' : 'm';
+            const unitLabel = unit === 'imperial' ? 'in' : 'mm';
             document.getElementById('spanUnit').textContent = unitLabel;
             document.getElementById('ridgeUnit').textContent = unitLabel;
             document.getElementById('resultUnit').textContent = unitLabel;
