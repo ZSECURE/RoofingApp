@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roofing Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .unit-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .unit-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .unit-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            padding-right: 60px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .unit-label {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-label {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-value {
+            color: #333;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .result-unit {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffe6e6;
+            border-left: 4px solid #ff4444;
+            border-radius: 8px;
+            color: #cc0000;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .calculator-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .result-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>🏠 Roofing Calculator</h1>
+        <p class="subtitle">Calculate rafter length with precision</p>
+
+        <div class="unit-selector">
+            <button class="unit-btn active" data-unit="imperial" onclick="switchUnit('imperial')">Imperial</button>
+            <button class="unit-btn" data-unit="metric" onclick="switchUnit('metric')">Metric</button>
+        </div>
+
+        <form id="roofingForm">
+            <div class="form-group">
+                <label for="overallSpan">Overall Span</label>
+                <div class="input-wrapper">
+                    <input type="number" id="overallSpan" step="0.01" min="0" required>
+                    <span class="unit-label" id="spanUnit">ft</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="ridgeWidth">Ridge Width</label>
+                <div class="input-wrapper">
+                    <input type="number" id="ridgeWidth" step="0.01" min="0" required>
+                    <span class="unit-label" id="ridgeUnit">ft</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="roofPitch">Roof Pitch (degrees)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="roofPitch" step="0.1" min="0" max="90" required>
+                    <span class="unit-label">°</span>
+                </div>
+            </div>
+
+            <button type="submit" class="calculate-btn">Calculate Rafter Length</button>
+        </form>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-label">Rafter Length</div>
+            <div class="result-value" id="resultValue">0</div>
+            <div class="result-unit" id="resultUnit">ft</div>
+        </div>
+    </div>
+
+    <script>
+        let currentUnit = 'imperial';
+
+        function switchUnit(unit) {
+            currentUnit = unit;
+            
+            // Update button states
+            document.querySelectorAll('.unit-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.unit === unit);
+            });
+
+            // Update unit labels
+            const unitLabel = unit === 'imperial' ? 'ft' : 'm';
+            document.getElementById('spanUnit').textContent = unitLabel;
+            document.getElementById('ridgeUnit').textContent = unitLabel;
+            document.getElementById('resultUnit').textContent = unitLabel;
+
+            // Hide results when switching units
+            document.getElementById('resultContainer').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        document.getElementById('roofingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get input values
+            const overallSpan = parseFloat(document.getElementById('overallSpan').value);
+            const ridgeWidth = parseFloat(document.getElementById('ridgeWidth').value);
+            const roofPitch = parseFloat(document.getElementById('roofPitch').value);
+
+            // Hide previous messages
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('resultContainer').classList.remove('show');
+
+            // Validate inputs
+            if (isNaN(overallSpan) || isNaN(ridgeWidth) || isNaN(roofPitch)) {
+                showError('Please enter valid numbers for all fields.');
+                return;
+            }
+
+            if (overallSpan <= 0 || ridgeWidth < 0 || roofPitch < 0 || roofPitch > 90) {
+                showError('Please enter valid positive values. Overall span must be greater than 0, and pitch must be between 0 and 90 degrees.');
+                return;
+            }
+
+            if (ridgeWidth >= overallSpan) {
+                showError('Ridge width must be less than overall span.');
+                return;
+            }
+
+            // Calculate rafter length
+            const rafterLength = calculateRafterLength(overallSpan, ridgeWidth, roofPitch);
+
+            // Display result
+            displayResult(rafterLength);
+        });
+
+        function calculateRafterLength(span, ridge, pitch) {
+            // Calculate the run (horizontal distance from wall to ridge)
+            const run = (span - ridge) / 2;
+
+            // Convert pitch from degrees to radians
+            const pitchRadians = pitch * (Math.PI / 180);
+
+            // Calculate the rise (vertical height)
+            const rise = run * Math.tan(pitchRadians);
+
+            // Calculate rafter length using Pythagorean theorem
+            const rafterLength = Math.sqrt(run * run + rise * rise);
+
+            return rafterLength;
+        }
+
+        function displayResult(length) {
+            const resultValue = document.getElementById('resultValue');
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Format to 2 decimal places
+            resultValue.textContent = length.toFixed(2);
+
+            // Show result with animation
+            resultContainer.classList.add('show');
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+    </script>
+</body>
+</html>
